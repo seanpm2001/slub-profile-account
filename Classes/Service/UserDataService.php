@@ -15,7 +15,6 @@ use Slub\SlubProfileAccount\Domain\Model\Dto\ApiConfiguration;
 use Slub\SlubProfileAccount\Http\Request;
 use Slub\SlubProfileAccount\Utility\ApiUtility;
 use Slub\SlubProfileAccount\Validation\DataArgumentValidation;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class UserDataService
 {
@@ -60,7 +59,7 @@ class UserDataService
 
         if ($fileFormat === null) {
             $status = ApiUtility::STATUS[400];
-            $status['message'] = 'Invalid file type. Only ' . implode(', ', $this->dataArgumentValidation::FILE_FORMATS) . '.';
+            $status['error'] = 'Invalid file type. Only ' . implode(', ', $this->dataArgumentValidation::FILE_FORMATS) . '.';
 
             return $status;
         }
@@ -71,7 +70,10 @@ class UserDataService
             return ApiUtility::STATUS[500];
         }
 
-        return $download;
+        return [
+            'contentType' => 'text/' . $fileFormat,
+            'data' => $download['data'],
+        ];
     }
 
     /**
@@ -85,17 +87,22 @@ class UserDataService
         $uri = $this->apiConfiguration->getDataDownloadUri();
         $uri = ApiUtility::replaceUriPlaceholder([$accountId, '', '', '', $fileFormat], $uri);
 
-        return $this->request->process($uri, 'GET', [
-            'headers' => [
-                'Pragma' => 'public',
-                'Expires' => 0,
-                'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-                'Content-Description' => 'File Transfer',
-                'Content-Type' => 'charset=UTF-8, text/' . $fileFormat . ';',
-                'Content-Disposition' => 'attachment; filename="' . self::FILE_NAME . '"',
-                'Content-Transfer-Encoding' => 'binary',
-            ]
-        ]);
+        return $this->request->process(
+            $uri,
+            'GET',
+            [
+                'headers' => [
+                    'Pragma' => 'public',
+                    'Expires' => 0,
+                    'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+                    'Content-Description' => 'File Transfer',
+                    'Content-Type' => 'charset=UTF-8, text/' . $fileFormat . ';',
+                    'Content-Disposition' => 'attachment; filename="' . self::FILE_NAME . '"',
+                    'Content-Transfer-Encoding' => 'binary',
+                ]
+            ],
+            $fileFormat === 'csv' ? 'text/text' : 'text/' . $fileFormat
+        );
     }
 
     /**

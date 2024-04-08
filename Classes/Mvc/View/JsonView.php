@@ -73,6 +73,11 @@ class JsonView extends ExtbaseJsonView
             ]
         ],
         'userDataDownload' => [
+            '_only' => [
+                'contentType',
+                'data',
+                'error'
+            ]
         ],
         'userSearchQueryDetail' => [
             '_only' => [

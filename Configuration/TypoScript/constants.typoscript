@@ -28,7 +28,7 @@ plugin.tx_slubprofileaccount {
       # cat=plugin.tx_slubprofileaccount/76595002_Api/145; type=string; label=Path to reserve history
       reserveHistory = https://liberoproxy.staging.katalogbeta.slub-dresden.de/core/###USER_ID###/items/historyres
       # cat=plugin.tx_slubprofileaccount/76595002_Api/150; type=string; label=Path to data download
-      dataDownload = https://libero.slub-dresden.de/csp/user/dsgvo01.csp?patronid=###USER_ID###&format=###FILE_FORMAT###
+      dataDownload = https://liberoproxy.staging.katalogbeta.slub-dresden.de/csp/user/dsgvo01.csp?patronid=###USER_ID###&format=###FILE_FORMAT###
     }
 
     # cat=plugin.tx_slubprofileaccount/76595003_Cache/100; type=int; label=Life time account cache in seconds

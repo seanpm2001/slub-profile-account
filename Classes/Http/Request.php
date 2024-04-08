@@ -44,16 +44,21 @@ class Request implements LoggerAwareInterface
      * @param string $uri
      * @param string $method
      * @param array $options
+     * @param string $contentType
      * @return array|null
      * @throws JsonException
      */
-    public function process(string $uri = '', string $method = 'GET', array $options = []): ?array
-    {
+    public function process(
+        string $uri = '',
+        string $method = 'GET',
+        array $options = [],
+        string $contentType = 'application/json'
+    ): ?array {
         try {
             $options = $this->mergeOptions($this->options, $options);
             $response = $this->requestFactory->request($uri, $method, $options);
 
-            return $this->getContent($response, $uri);
+            return $this->getContent($response, $contentType, $uri);
         } catch (RequestException $e) {
             /** @extensionScannerIgnoreLine */
             $this->logger->error($e->getMessage());
@@ -78,16 +83,20 @@ class Request implements LoggerAwareInterface
 
     /**
      * @param ResponseInterface $response
+     * @param string $contentType
      * @param string $uri
      * @return array|null
      * @throws JsonException
      */
-    protected function getContent(ResponseInterface $response, string $uri = ''): ?array
+    protected function getContent(ResponseInterface $response, string $contentType, string $uri = ''): ?array
     {
         $content = '';
 
-        if ($response->getStatusCode() === 200 && strpos($response->getHeaderLine('Content-Type'), 'application/json') === 0) {
-            $content = (array)json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        if (
+            $response->getStatusCode() === 200 &&
+            strpos($response->getHeaderLine('Content-Type'), $contentType) === 0
+        ) {
+            $content = $response->getBody()->getContents();
         }
 
         if (empty($content)) {
@@ -103,6 +112,8 @@ class Request implements LoggerAwareInterface
             return null;
         }
 
-        return $content;
+        return $contentType === 'application/json'
+            ? (array)json_decode($content, true, 512, JSON_THROW_ON_ERROR)
+            : ['data' => $content];
     }
 }

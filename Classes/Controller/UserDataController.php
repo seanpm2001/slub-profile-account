@@ -11,13 +11,11 @@ declare(strict_types=1);
 
 namespace Slub\SlubProfileAccount\Controller;
 
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Slub\SlubProfileAccount\Domain\Model\User\Account as User;
 use Slub\SlubProfileAccount\Mvc\View\JsonView;
 use Slub\SlubProfileAccount\Service\UserDataService as UserService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 
 class UserDataController extends ActionController
 {

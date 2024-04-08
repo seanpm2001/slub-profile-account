@@ -25,7 +25,7 @@ class DataArgumentValidation
      * User is checked somewhere else.
      *
      * @param array $arguments
-     * @return string
+     * @return string|null
      */
     public function validateDownloadArguments(array $arguments): ?string
     {
